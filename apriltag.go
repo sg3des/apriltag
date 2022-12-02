@@ -13,6 +13,25 @@ import (
 	"unsafe"
 )
 
+type DetectorOpt struct {
+	NThreads     int
+	QuadDecimate float32
+	QuadSigma    float32
+	RefineEdges  int
+	RefinePose   int
+	RefineDecode int
+}
+
+// DefaultDetectorOpt describe default detector options
+var DefaultDetectorOpt = DetectorOpt{
+	NThreads:     1,
+	QuadDecimate: 1,
+	QuadSigma:    0,
+	RefineEdges:  1,
+	RefinePose:   0,
+	RefineDecode: 0,
+}
+
 // Detector encapsulates an apriltag detector initialized with a tag family.
 type Detector struct {
 	family   *C.apriltag_family_t
@@ -20,9 +39,17 @@ type Detector struct {
 }
 
 // New creates a new 36h11 detector.
-func New() *Detector {
+func New(opt DetectorOpt) *Detector {
 	f := C.tag36h11_create()
 	d := C.apriltag_detector_create()
+
+	d.nthreads = C.int(opt.NThreads)
+	d.quad_decimate = C.float(opt.QuadDecimate)
+	d.quad_sigma = C.float(opt.QuadSigma)
+	d.refine_edges = C.int(opt.RefineEdges)
+	d.refine_pose = C.int(opt.RefinePose)
+	d.refine_decode = C.int(opt.RefinePose)
+
 	C.apriltag_detector_add_family(d, f)
 	return &Detector{
 		family:   f,

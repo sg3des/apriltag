@@ -9,7 +9,7 @@ import (
 )
 
 func TestCreateClose(t *testing.T) {
-	detector := New()
+	detector := New(DefaultDetectorOpt)
 	err := detector.Close()
 	if err != nil {
 		t.Error(err)

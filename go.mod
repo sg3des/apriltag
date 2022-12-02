@@ -1,3 +1,3 @@
-module github.com/twitchyliquid64/go-apriltag
+module github.com/sg3des/apriltag
 
-go 1.17
+go 1.19

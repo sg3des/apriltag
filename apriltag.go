@@ -10,6 +10,7 @@ import "C"
 import (
 	"image"
 	"image/color"
+	"sync"
 	"unsafe"
 )
 
@@ -36,6 +37,7 @@ var DefaultDetectorOpt = DetectorOpt{
 type Detector struct {
 	family   *C.apriltag_family_t
 	detector *C.apriltag_detector_t
+	sync.Mutex
 }
 
 // New creates a new 36h11 detector.
@@ -117,7 +119,11 @@ func ImgToGrayscale(img image.Image) *image.Gray {
 // Find returns a slice of all the apriltags found in the provided image.
 func (d *Detector) Find(goImage *image.Gray) []Finding {
 	img := grayToC(goImage)
+
+	d.Lock()
 	detections := C.apriltag_detector_detect(d.detector, img)
+	d.Unlock()
+
 	numDetections := int(C.zarray_size(detections))
 
 	var findings []Finding
